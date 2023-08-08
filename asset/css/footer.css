@@ -1,0 +1,11 @@
+a:hover, .nav-link:hover{
+    color:blue;
+}
+#footer{
+    width: 100%;
+    z-index:20;
+    position: fixed;
+    bottom:0px;
+    left:0px;
+    background-color:rgba(0,0,0,1) ;
+ }
