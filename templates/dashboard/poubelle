@@ -1,0 +1,209 @@
+<?php
+session_start();
+
+// Vérifier si l'ID de la news est passé dans l'URL
+if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+    // Rediriger l'utilisateur vers une page d'erreur ou la liste des news, par exemple :
+    header("Location: showNews.php");
+    exit;
+}
+
+// Récupérer l'ID de la news depuis l'URL
+$newsId = $_GET['id'];
+
+// Connexion à la base de données (assurez-vous d'inclure le fichier connexion.php)
+require_once "connexion.php";
+
+// Vérifier si le formulaire a été soumis pour mettre à jour la news
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Récupérer les données du formulaire
+    $titre = $_POST["titre"];
+    $abstract = $_POST["abstract"];
+    $auteur = $_POST["auteur"];
+    $rubrik = $_POST["rubrik"];
+
+    // Vérifier si une nouvelle image a été téléchargée
+    if ($_FILES['image']['error'] === UPLOAD_ERR_OK) {
+        // Récupérer le nom temporaire du fichier
+        $tmpName = $_FILES['image']['tmp_name'];
+
+        // Obtenir le nom d'origine du fichier
+        $originalFileName = $_FILES['image']['name'];
+
+        // Vérifier si une image avec le même nom existe déjà dans le dossier de destination
+        $destination = '../../asset/images/' . $originalFileName;
+        $counter = 1;
+        while (file_exists($destination)) {
+            // Si une image avec le même nom existe, ajouter un suffixe numérique pour rendre le nom unique
+            $destination = '../../asset/images/' . pathinfo($originalFileName, PATHINFO_FILENAME) . '_' . $counter . '.' . pathinfo($originalFileName, PATHINFO_EXTENSION);
+            $counter++;
+        }
+
+        // Déplacer le fichier téléchargé vers le dossier des images avec le nom unique
+        if (move_uploaded_file($tmpName, $destination)) {
+            // Mettre à jour le nom de l'image dans la base de données
+            $sqlUpdateImage = "UPDATE news SET image = :image WHERE id = :id";
+            $stmtUpdateImage = $db->prepare($sqlUpdateImage);
+            $stmtUpdateImage->bindParam(":image", basename($destination));
+            $stmtUpdateImage->bindParam(":id", $newsId);
+            $stmtUpdateImage->execute();
+        } else {
+            // Une erreur s'est produite lors du téléchargement de l'image
+            // Vous pouvez gérer cette situation selon vos besoins
+        }
+    }
+
+    // Requête SQL pour mettre à jour le reste des informations de la news dans la base de données
+    $sqlUpdateNews = "UPDATE news SET titre = :titre, abstract = :abstract, auteur = :auteur, rubrik = :rubrik, date_modification = NOW() WHERE id = :id";
+    $stmtUpdateNews = $db->prepare($sqlUpdateNews);
+    $stmtUpdateNews->bindParam(":titre", $titre);
+    $stmtUpdateNews->bindParam(":abstract", $abstract);
+    $stmtUpdateNews->bindParam(":auteur", $auteur);
+    $stmtUpdateNews->bindParam(":rubrik", $rubrik);
+    // Ajouter d'autres bindParam pour les autres champs si nécessaire
+    $stmtUpdateNews->bindParam(":id", $newsId);
+
+    // Exécuter la requête
+    try {
+        $stmtUpdateNews->execute();
+        // Rediriger l'utilisateur vers la page des news
+        header("Location: getAllNews.php");
+        exit;
+    } catch (PDOException $e) {
+        echo "Erreur : " . $e->getMessage();
+        exit;
+    }
+}
+
+// Requête SQL pour récupérer les informations de la news depuis la base de données
+try {
+    $sql = "SELECT id, titre, abstract, auteur, rubrik, image FROM news WHERE id = :id";
+    $stmt = $db->prepare($sql);
+    $stmt->bindParam(":id", $newsId);
+    $stmt->execute();
+    $news = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Vérifier si la news avec l'ID spécifié existe
+    if (!$news) {
+        // Rediriger l'utilisateur vers une page d'erreur ou la liste des news, par exemple :
+        header("Location: getAllNews.php");
+        exit;
+    }
+} catch (PDOException $e) {
+    echo "Erreur : " . $e->getMessage();
+    exit;
+}
+require_once '../../asset/base.php';
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Modifier la news</title>
+    <!-- Inclure les liens vers les fichiers CSS et JS nécessaires -->
+    <link rel="stylesheet" href="chemin/vers/votre/fichier.css">
+</head>
+
+<body>
+
+    <div class="container-fluid " style=" margin-top:-850px; padding-left:100px; ">
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+                <!-- Formulaire de modification de la news -->
+                <form method="post" action="updateNews.php?id=<?php echo $newsId; ?>" enctype="multipart/form-data">
+                    <div>
+                        <label for="titre">Titre :</label>
+                        <input type="text" class="form-control mb-4" id="titre" name="titre" value="<?php echo $news['titre']; ?>" required>
+                    </div>
+                    <div>
+                        <label for="abstract">Abstract :</label>
+                        <textarea id="abstract" class="mb-4" rows="3" cols="234" name="abstract" required><?php echo $news['abstract']; ?></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label for="auteur">Auteur :</label>
+                            <input type="text" class="form-control mb-4" id="auteur" name="auteur" value="<?php echo $news['auteur']; ?>" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="rubrik">Rubrik :</label>
+                            <input type="text" class="form-control mb-4" id="rubrik" name="rubrik" value="<?php echo $news['rubrik']; ?>" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="image">Image :</label>
+                            <input type="file" class="form-control mb-4" id="image" name="image">
+                        </div>
+                        <div class="col-md-2" style="border:px solid red;">
+                            <label for="image">Image actuelle :</label><br>
+                            <img class="toto mb-4" src="<?php echo '../../asset/images/' . $news['image']; ?>" alt="Image" width="300" height="100">
+                        </div>
+
+                    </div>
+                    <!-- Ajouter d'autres champs pour les autres informations de la news si nécessaire -->
+                    <div>
+                        <input class="btn btn-success" type="submit" value="Enregistrer les modifications">
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+
+        <!-- Ajouter d'autres éléments HTML et du code PHP si nécessaire -->
+
+        <!-- Inclure les liens vers les fichiers JS nécessaires -->
+
+    </div>
+</body>
+
+</html>
+<script src="chemin/vers/votre/fichier.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<?php require_once 'footer.php'; ?>
+
+
+
+
+
+
+
+
+
+echo '<div class="modal fade" id="exampleModal6" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Modifié un article</h1>
+            </div>
+            <div class="modal-body">
+                <div class="modal-body">
+                    <!----------------modifier un article------------------------------->
+                    <h1>Modifier la news</h1>
+                    <form method="post" action="updateArticle.php?id=' . $article['id'] . '">
+                        <label for="titre">Titre :</label>
+                        <input type="text" id="titre" name="titre" value="' .  $article['titre'] . '" required><br>
+
+                        <label for="image">Image :</label>
+                        <input type="file" id="image" name="image" rows="4" required>' . $article['image'] . '</textarea><br>
+
+                        <label for="abstract">Abstract :</label>
+                        <textarea id="abstract" name="abstract" rows="4" required>' .  $article['abstract'] . '</textarea><br>
+
+                        <label for="rubrik">Rubrik :</label>
+                        <input type="text" id="rubrik" name="rubrik" value="' . $article['rubrik'] . '" required><br>
+
+
+
+                        <input type="submit" value="Enregistrer les modifications">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>';
+
+
+data-bs-toggle="modal" data-bs-target="#exampleModal6"

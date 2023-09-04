@@ -12,13 +12,13 @@
         //methode permettant la recuperation des users
         public function getAllUsers(){
             //requete sql
-            $query = "SELECT * from users ORDER BY date_creation DESC LIMIT 8";
+            $query = "SELECT * FROM users ORDER BY date_creation DESC LIMIT 8";
             //protection de la requete contre les injections sql(xss)
             $stmt = $this->db->prepare($query);
-        //3. on execute la requete
-        $stmt->execute();
-        //4. retourne les données
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            //3. on execute la requete
+            $stmt->execute();
+            //4. retourne les données
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
 
         //methode permettant la recuperation d'un user
@@ -27,12 +27,12 @@
             $query = "SELECT * FROM users WHERE id = :users_id";
             //protection de la requete contre les injections sql(xss)
             $stmt = $this->db->prepare($query);
-        //5. on hydrate les donnees 
-        $stmt->bindParam(':news_id', $userId, PDO::PARAM_INT);
-        //6. on execute
-        $stmt->execute();
-        //7. on retourne les données
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+            //5. on hydrate les donnees 
+            $stmt->bindParam(':news_id', $userId, PDO::PARAM_INT);
+            //6. on execute
+            $stmt->execute();
+            //7. on retourne les données
+            return $stmt->fetch(PDO::FETCH_ASSOC);
         }
 
     }

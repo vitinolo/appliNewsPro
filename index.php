@@ -1,41 +1,25 @@
 <!--index.php-->
-<?php session_start();
-if (!isset($_SESSION["prenom"])) {
-    $_SESSION["prenom"] = '';
-}
-if (!isset($_SESSION["nom"])) {
-    $_SESSION["nom"] = '';
-}
-if (!isset($_SESSION["role"])) {
-    $_SESSION["role"] = '';
-}
-
-//0. appel du fichier base.php
+<?php
+//0. appel du fichier base.php (link)
 require_once 'asset/base.php';
-
 //1. inclure le fichier de connexion a la base de donnée
 require_once 'config/connexion/connexion.php';
-//require_once 'config/connexion/deconnexion.php';
-
 //2. inclure les classes controllers
 require_once 'src/controllers/NewsController.php';
-
+require_once 'src/controllers/UserController.php';
 //3. inclure les classes models
 require_once 'src/models/NewsModel.php';
-
+require_once 'src/models/UserModel.php';
 //4. instancier le ou les différents controllers
 $newsController = new NewsController($db);
-
 //4.1 incorporer le header
 require_once 'templates/elements/header.php';
-
 //5. verification de l'action dans l'url
 if (isset($_GET['action'])) {
     $action = $_GET['action'];
 } else {
     $action = 'showAllNews'; //action par defaut
 }
-
 //6. execution des actions
 switch ($action) {
     case 'showAllNews':
@@ -48,6 +32,15 @@ switch ($action) {
         } else {
             //rediriger ou afficher un message d'erreur
             echo "erreur lors de l'affichage ";
+        }
+        break;
+    case 'deleteNews':
+        if (isset($_GET['id'])) {
+            $newsId = $_GET['id'];
+            $newsController->deleteNews($newsId);
+        } else {
+            //rediriger ou afficher un message d'erreur
+            echo "impossible de supprimer la news ";
         }
         break;
     case 'showAllSportNews':
@@ -64,6 +57,9 @@ switch ($action) {
         break;
     case 'showAllCinemaNews':
         $newsController->showAllCinemaNews();
+        break;
+    case 'showAllUsers':
+        $userController->showAllUsers();
         break;
     default:
         break;

@@ -93,4 +93,21 @@ class NewsController
 
         include('templates/news/news.php');
     }
+    // Méthode pour supprimer un article
+    public function deleteNews($newsId)
+    {
+        // Instancier le modèle
+        $newsModel = new NewsModel($this->db);
+
+        // Supprimer l'article par son ID
+        $success = $newsModel->deleteNewsById($newsId);
+
+        if ($success) {
+            // Article supprimé avec succès
+            echo "L'article avec l'ID $newsId a été supprimé.";
+        } else {
+            // Échec de la suppression de l'article
+            echo "Impossible de supprimer l'article avec l'ID $newsId.";
+        }
+    }
 }

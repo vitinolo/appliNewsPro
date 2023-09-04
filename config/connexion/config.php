@@ -3,4 +3,4 @@
 $host = 'localhost';
 $username = 'root';
 $password = '';
-$dbname = 'applinews';
+$dbname = 'applinewspro';

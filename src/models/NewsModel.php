@@ -15,7 +15,7 @@ class NewsModel
     public function getAllNews()
     {
         //requete sql
-        $query = "SELECT * from news ORDER BY date_creation DESC LIMIT 20";
+        $query = "SELECT * FROM news ORDER BY date DESC LIMIT 20";
         //protection de la requete contre les injections sql(xss)
         $stmt = $this->db->prepare($query);
         //3. on execute la requete
@@ -43,7 +43,7 @@ class NewsModel
     public function getAllSportNews()
     {
         //requete sql
-        $query = "SELECT * from news WHERE rubrik = 'sports' ORDER BY date_creation DESC LIMIT 20";
+        $query = "SELECT * FROM news WHERE rubrik = 'sports' ORDER BY date DESC LIMIT 20";
         //protection de la requete contre les injections sql(xss)
         $stmt = $this->db->prepare($query);
         //3. on execute la requete
@@ -56,7 +56,7 @@ class NewsModel
     public function getAllCuisineNews()
     {
         //requete sql
-        $query = "SELECT * from news WHERE rubrik = 'cuisine' ORDER BY date_creation DESC LIMIT 20";
+        $query = "SELECT * FROM news WHERE rubrik = 'cuisine' ORDER BY date DESC LIMIT 20";
         //protection de la requete contre les injections sql(xss)
         $stmt = $this->db->prepare($query);
         //3. on execute la requete
@@ -69,7 +69,7 @@ class NewsModel
     public function getAllVoyageNews()
     {
         //requete sql.
-        $query = "SELECT * from news WHERE rubrik = 'voyages' ORDER BY date_creation DESC LIMIT 20";
+        $query = "SELECT * FROM news WHERE rubrik = 'voyages' ORDER BY date DESC LIMIT 20";
         //protection de la requete contre les injections sql(xss).
         $stmt = $this->db->prepare($query);
         //3. on execute la requete.
@@ -82,7 +82,7 @@ class NewsModel
     public function getAllCultureNews()
     {
         //requete sql.
-        $query = "SELECT * from news WHERE rubrik = 'culture' ORDER BY date_creation DESC LIMIT 20";
+        $query = "SELECT * FROM news WHERE rubrik = 'culture' ORDER BY date DESC LIMIT 20";
         //protection de la requete contre les injections sql(xss).
         $stmt = $this->db->prepare($query);
         //3. on execute la requete.
@@ -95,12 +95,27 @@ class NewsModel
     public function getAllCinemaNews()
     {
         //requete sql
-        $query = "SELECT * from news WHERE rubrik = 'cinema' ORDER BY date_creation DESC LIMIT 20";
+        $query = "SELECT * FROM news WHERE rubrik = 'cinema' ORDER BY date DESC LIMIT 20";
         //protection de la requete contre les injections sql(xss).
         $stmt = $this->db->prepare($query);
         //3. on execute la requete.
         $stmt->execute();
         //4. retourne les données.
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    // Méthode pour supprimer un article par ID
+    public function deleteNewsById($newsId)
+    {
+        // Requête pour supprimer l'article par ID
+        $query = "DELETE FROM news WHERE id = :news_id";
+
+        // Préparer la requête
+        $stmt = $this->db->prepare($query);
+
+        // Lier le paramètre news_id
+        $stmt->bindParam(':news_id', $newsId, PDO::PARAM_INT);
+
+        // Exécuter la requête et retourner le statut de réussite
+        return $stmt->execute();
     }
 }

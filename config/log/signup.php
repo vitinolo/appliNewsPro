@@ -16,11 +16,10 @@ if (isset($_POST['nom']) && isset($_POST['prenom']) && isset($_POST['email']) &&
     } catch (PDOException $e) {
         echo "Erreur : " . $e->getMessage();
     }
-    //on crée une variable dans laquelle on encapsule la valeur false
-    $condition = false;
+
     //avec la fonction in_array() on vérifie si la valeur du premier paramètre ($email)
-    // se trouve dans le tableau ($emailUsers) et si la réponse est non alors on affiche "email utilisé"
-    if (in_array($email, $emailUsers, $condition)) {
+    // se trouve dans le tableau ($emailUsers) et si la réponse est oui alors on affiche "email utilisé"
+    if (in_array($email, $emailUsers, TRUE)) {
         //on envoie un message d'erreur via la variable de session
         $_SESSION['erreur_message'] = "Email déjà utilisé, veuillez recommencer !";
         //on redirige vers l'accueil

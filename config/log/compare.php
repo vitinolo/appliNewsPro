@@ -1,5 +1,5 @@
-<?php
-session_start();
+<?php session_start();
+
 //----------------vérification si il y a bien (identifiant + mot de pass) dans formulaire--------------> 
 require_once("../connexion/connexion.php");
 
@@ -26,14 +26,17 @@ if (isset($_POST['lemail']) && isset($_POST['lpassword'])) {
             $userNom = $user['nom'];
             $userPrenom = $user['prenom'];
             $userRole = $user['role'];
+            $userId = $user['id'];
             $_SESSION['prenom'] = $userPrenom;
             $_SESSION['nom'] = $userNom;
             $_SESSION['role'] = $userRole;
+            $_SESSION['id'] = $userId;
             header("Location: ../../index.php");
             //cacher le formulaire.
             $userPrenom = '';
             $userNom = '';
             $userRole = '';
+            $userId = '';
             exit();
         } else {
             // Les informations d'identification sont incorrectes.
@@ -43,6 +46,7 @@ if (isset($_POST['lemail']) && isset($_POST['lpassword'])) {
             $userPrenom = '';
             $userNom = '';
             $userRole = '';
+            $userId = '';
             exit();
         }
     } else {
@@ -53,6 +57,7 @@ if (isset($_POST['lemail']) && isset($_POST['lpassword'])) {
         $userPrenom = '';
         $userNom = '';
         $userRole = '';
+        $userId = '';
         exit();
     }
 }

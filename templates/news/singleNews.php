@@ -10,7 +10,7 @@
 
 <body>
     <div class="container ncontainer d-flex justify-content-center">
-        <div class="row card-wrapper mt-5" style="width:70%;">
+        <div class="row card-wrapper mt-5" style="width:70%;margin-bottom:60px;">
             <h1 class="row d-flex justify-content-center mt-5" style="margin-top:50px;"><?php echo htmlspecialchars($article['rubrik']); ?></h1>
             <div class="card d-flex justify-content-center mb-5 mt-3">
                 <h5 class="card-title justify-content-center mt-3 m-3">
@@ -30,6 +30,9 @@
                         <?php echo htmlspecialchars($article['auteur']); ?>
                     </h3>
                 </div>
+                <h3 class="dateArticle" style="height:50px;">
+                    <?php echo htmlspecialchars($article['date']); ?>
+                </h3>
             </div>
         </div>
     </div>
