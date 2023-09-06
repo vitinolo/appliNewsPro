@@ -294,7 +294,7 @@ if (isset($_GET['action'])) {
                                                                 echo '<td>' . $article['id'] . '</td>';
                                                                 echo '<td>' . $article['titre'] . '</td>';
                                                                 echo '<td class="abstract-cell" style="text-align:justify;">' . $article['abstract'] . '</td>';
-                                                                echo '<td><div><img src="../../asset/images/' . $article['image'] . '" alt="Image" width="100" height="60"></div><div>' . $article['image'] . '</div></td>';
+                                                                echo '<td><div><img src="./asset/images/' . $article['image'] . '" alt="Image" width="100" height="60"></div><div>' . $article['image'] . '</div></td>';
                                                                 echo '<td>' . $article['rubrik'] . '</td>';
                                                                 echo '<td>' . $article['auteur'] . '</td>';
                                                                 echo '<td>' . $article['date'] . '</td>';
